@@ -9,7 +9,7 @@ cd "${mypath}/Data/Clean"
 *Set file name as you need to
 local filename fullcps0523
 
-use if lnwage!=. & class_worker == 1 & age>=20 & age<=60 using "`filename'", clear
+use if lnwage!=. & class_worker == 1 & inrange(age, 25, 55) using "`filename'", clear
 
 
 
