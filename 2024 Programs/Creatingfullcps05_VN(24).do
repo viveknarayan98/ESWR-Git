@@ -5,7 +5,9 @@ cd "${mypath}/Data/Raw/Original CPS Downloads"
 
 
 *2010 onwards data
-use cps_00041, clear
+use cps_00050, clear
+
+replace earnweek = earnweek2 if year==2023 & month>=4
 
 *2000 onwards data
 append using cps_00040

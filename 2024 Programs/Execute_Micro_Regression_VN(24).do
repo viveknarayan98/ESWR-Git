@@ -2,24 +2,11 @@
 global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
 cd "${mypath}/Data/Clean"
 
-**Build the full file
-use fullcps0523, clear
-
-drop LineCode 
-merge m:1 ind1990 using ind1990LCxwalk_annual
-drop _merge Description CPS_Description trimdescrip
-
-
-append using fullcps9304
-append using fullcps7992
 
 **Keep required variables
-keep year month cpsidp LineCode l_status mish empsame lnwage ind1990 statefip unionm unionc educ nWhite age sex earnwt hours gradeate occ_g marst hours
+use year month cpsidp LineCode l_status mish empsame lnwage ind1990 statefip unionm unionc educ nWhite age sex earnwt hours gradeate occ_g marst hours using fullcps, clear
 
 keep if inrange(age, 25, 55)
-
-
-
 
 **Set panel
 gen time = ym(year, month)

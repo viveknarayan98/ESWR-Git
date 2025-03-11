@@ -48,3 +48,10 @@ tsset jtyears
 
 twoway (rarea lower_ci upper_ci jtyears, color(gs10)) (tsline mean_mincer, lcolor(blue) lwidth(medium)), ytitle("Mincer Residual") xtitle("Job tenure") title("Mincer residual over length of time at current job") legend(order(2 "Mincer residual" 1 "95% CI"))
 graph export "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Data/Clean/Mincer_graph.jpg", replace as(jpg) name("Graph") quality(100)
+
+*Lowess Command
+
+twoway (rarea lower_ci upper_ci jtyears, color(gs10)) (lowess mean_mincer jtyears, bwidth(0.2) lcolor(blue) lwidth(medium)), ytitle("Mincer Residual") xtitle("Job tenure") title("Mincer residual over length of time at current job") legend(order(2 "Mincer residual" 1 "95% CI")) 
+
+graph export "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Data/Clean/Mincer_graph.jpg", replace as(jpg) name("Graph") quality(100)
+

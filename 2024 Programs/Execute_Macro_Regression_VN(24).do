@@ -3,14 +3,12 @@
 global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
 cd "${mypath}/Data/Clean"
 
-local quarterly=1
+local quarterly=0
 
 *Appending all the collapsed and merged CPS files
 
 if `quarterly'==0{
-	use merged_cps_0523, clear
-	append using merged_cps_9304
-	append using merged_cps_7992
+	use merged_cps, clear
 }
 else{
 	use mergedcollapsedcps, clear
@@ -20,8 +18,8 @@ else{
 if `quarterly'==0{
 	rename year time
 	format time %ty 
-	sort year LineCode
-	save merged_cps_annual, replace
+	sort time LineCode
+	save merged_cps, replace
 	}
 
 
@@ -66,7 +64,7 @@ xtreg F.lsep   i.time age education* nWhite male unionm unionc GDP_G lrwage lpro
 xtreg F.lprod  i.time age education* nWhite male unionm unionc GDP_G lrwage lsep  wrigid, fe robust cluster(LineCode)
 
 *Create Wage Rigidty Figure
-collapse(sum) wchangen wchange0 wchangep EU, by(year)
+collapse(sum) wchangen wchange0 wchangep EU, by(time)
 
 gen wrigid= wchange0/(wchangen+wchangep+EU+wchange0)*100
 

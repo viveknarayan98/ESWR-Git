@@ -41,7 +41,8 @@ global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/
 	*Creates the CPS microdata file for 1993-2004
 		do fullcpsbuilder9304.do
 
-
+    *Run this and transfer the directory to the ESWR folder
+	
 	*2005-2023
 	cd "${mypath}/2024 Programs"
 	*Creates the CPS microdata file for 2005-2024

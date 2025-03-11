@@ -5,59 +5,47 @@ cls
 global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
 cd "${mypath}/Data/Clean"
 
-local year_range 0523
-local earlier_year_range 9304
-local cpsfile fullcps`year_range'
+use fullcps0523
+
+	drop LineCode
+	merge m:1 ind1990 using ind1990LCxwalk_annual
+	drop _merge
+
+append using fullcps9304
+append using fullcps7992
+
+save fullcps, replace
 
 ************Collapse wages****************
 
 *use year using "`cpsfile'"
 
-use wage hours year ind1990 LineCode earnwt l_status using `cpsfile', clear
-
-
-if `year_range'==0523{
-	drop LineCode
-	merge m:1 ind1990 using ind1990LCxwalk_annual
-	drop _merge
-}
+use wage hours year ind1990 LineCode earnwt l_status using fullcps, clear
 
 keep if l_status!=3
 
 collapse(mean) wage [aw=earnwt*hours], by(year LineCode)
 
-save "collapsedwages_i_`year_range'", replace
+save collapsedwages_i, replace
 
 
 ***********Collapse hours_i*******************
 
-use hours year ind1990 LineCode earnwt l_status using `cpsfile', clear
+use hours year ind1990 LineCode earnwt l_status using fullcps, clear
 
 keep if l_status!=3
 
-if `year_range'==0523{
-	drop LineCode
-	merge m:1 ind1990 using ind1990LCxwalk_annual
-	drop _merge
-}
-
 collapse (mean) hours [aw=earnwt], by(year LineCode)
 
-save "collapsed_hours_i_`year_range'", replace
+save collapsed_hours_i, replace
 
 
 ***********Collapse demographics_i*************
 
-use year month cpsidp LineCode empstat l_status hours lnwage age gradeate nWhite sex unionm unionc educ wtfinl ind1990 mish using "`cpsfile'", clear
+use year month cpsidp LineCode empstat l_status hours lnwage age gradeate nWhite sex unionm unionc educ wtfinl ind1990 mish using fullcps, clear
 
 keep if l_status!=3
 
-
-if `year_range'==0523{
-	drop LineCode
-	merge m:1 ind1990 using ind1990LCxwalk_annual
-	drop _merge
-}
 
 preserve
 
@@ -85,29 +73,11 @@ gen EmploymentCPS = l_status==1
 
 collapse (sum) EmploymentCPS (mean) age gradeate nWhite male unionm unionc education*  [iw=wtfinl], by(year LineCode)
 
-save "collapsed_demographics_i_`year_range'", replace
+save collapsed_demographics_i, replace
 
 ************Collapse separations and wage changes************
 
-qui sum year
-local iyear = r(min)
-local lyear = r(max)
-
-if `iyear'>1979{
-	
-	use year month cpsidp LineCode empstat l_status hours lnwage age gradeate nWhite sex unionm unionc educ wtfinl ind1990 mish using fullcps`earlier_year_range', clear
-	keep if year==`iyear'-1
-	save fullcps`earlier_year_range'_append, replace
-}
-
-
 restore
-
-if `iyear'>1979{
-	append using fullcps`earlier_year_range'_append
-	erase fullcps`earlier_year_range'_append.dta
-}
-
 
 *Switch to monthly time
 
@@ -162,20 +132,18 @@ keep EE EU EN UE NE empdenom wchange0 wchangen wchangep averageweight averagewei
 
 preserve
 collapse (sum) wchange0 wchangen wchangep [aw=averageweightoneyear], by(year LineCode)
-save "wagechanges_`year_range'", replace
+save "wagechanges_i", replace
 
 *Separations collapsed
 
 restore
 
-keep if year>= `iyear'
-
 collapse(sum) EE EU EN UE NE empdenom [aw=averageweight], by(year LineCode)
-save "separations_`year_range'", replace
+save separations_i, replace
 
 *Merging files for macro regression
 
-local files_to_merge separations_`year_range' collapsedwages_i_`year_range' emp_gdp_inf_annual collapsed_demographics_i_`year_range' wagechanges_`year_range' collapsed_hours_i_`year_range'
+local files_to_merge separations_i collapsedwages_i emp_gdp_inf_annual collapsed_demographics_i wagechanges_i collapsed_hours_i
 
 foreach file in `files_to_merge'{
 	merge 1:1 year LineCode using `file'
@@ -184,8 +152,6 @@ foreach file in `files_to_merge'{
 
 drop if GDP==.
 
-keep if inrange(year, `iyear', `lyear')
-
-save merged_cps_`year_range', replace
+save merged_cps, replace
 
 
