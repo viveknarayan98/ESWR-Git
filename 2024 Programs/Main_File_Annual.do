@@ -3,19 +3,16 @@ global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/
 **MACRO DATA**
 
 	cd "${mypath}/2024 Programs"
-	*Create crosswalk between industry categories and ind1990 variable from CPS
-	do ind1990_LCxwalk_annual_VN(24).do
-
-
-	cd "${mypath}/2024 Programs"
 	*Annual sectoral inflation measures
 	do LoadAnnualInflation_VN(24).do
-
 
 	cd "${mypath}/2024 Programs"
 	*Annual sectoral GDP measures
 	do LoadAnnualGDP_VN(24).do
-
+	
+	cd "${mypath}/2024 Programs"
+	*Create crosswalk between industry categories and ind1990 variable from CPS
+	do ind1990_LCxwalk_annual_VN(24).do
 
 	cd "${mypath}/2024 Programs"
 	*Annual sectoral employment and merges with GDP and inflation
@@ -35,13 +32,10 @@ global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/
 	*Creates the CPS microdata file for 1979-1992
 	do fullcpsbuilder7992_VN(24).do
 
-	*1993-2004
-
 	cd "${mypath}/2024 Programs"
 	*Creates the CPS microdata file for 1993-2004
-		do fullcpsbuilder9304.do
+	do fullcpsbuilder9304.do
 
-    *Run this and transfer the directory to the ESWR folder
 	
 	*2005-2023
 	cd "${mypath}/2024 Programs"

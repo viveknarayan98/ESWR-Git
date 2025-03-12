@@ -4,7 +4,7 @@
 * This version: May 2022
 * ------------------------------------------------------------------------------
 
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 cd "${mypath}/Data/Clean"
 
 *-----------------------------------------------------------------------
@@ -13,9 +13,7 @@ cd "${mypath}/Data/Clean"
 
 *Set the filename to whatever year period you are using 
 
-local filename fullcps0523
-
-use "`filename'", clear
+use fullcps, clear
 
 *Must do this to avoid MORG data (which is not topcoded)
 
@@ -36,7 +34,7 @@ foreach year of numlist `iyear'/`lyear' {
 		*Keep relevant variables
 		quietly {
 		clear 
-		use earnweek l_status  class_worker cpsidp year month earnwt if year==`year' & month == `month' using "`filename'"
+		use earnweek l_status  class_worker cpsidp year month earnwt if year==`year' & month == `month' using fullcps
 		
 		*Keep employed workers
 		if _N>0 {
@@ -133,7 +131,7 @@ ren earnweek earnweek_i
 sort cpsidp year month
 save imputed_wages, replace 
 
-use "`filename'"
+use fullcps, clear
 if `iyear'==1979{
 	drop hourslw_morg earnwt_morg earnhre_morg earnwke_morg ahrsworkt uhrswork1 uhrsworkorg trimdescrip Description CPS_Description union cpsid
 }
@@ -158,5 +156,5 @@ gen wage = earnweek_i/hours
 gen lnwage = log(wage)	
 
 * Save
-save "`filename'", replace 
+save fullcps, replace 
 erase imputed_wages.dta

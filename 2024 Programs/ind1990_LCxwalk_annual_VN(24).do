@@ -1,7 +1,6 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
-
-import excel "${mypath}/Data/Raw/Original CPS Downloads/ind_90-00.xls", sheet("Sheet1") cellrange(A6:B980) clear
+import excel "${mypath}/Data/Raw/xwalks/ind_90-00.xls", sheet("Sheet1") cellrange(A6:B980) clear
 
 rename A ind1990
 rename B CPS_Description
@@ -35,7 +34,7 @@ cd "${mypath}/Data/Clean"
 
 gen trimdescrip = substr(Description, 1, 4)
 
-merge m:1 trimdescrip using Line_Code_Descrip
+merge m:1 trimdescrip using Line_Code_Descrip_Annual
 
 keep if _merge==3
 

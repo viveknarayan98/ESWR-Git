@@ -1,4 +1,5 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
+
 cd "${mypath}/Data/Clean"
 
 use "${mypath}/Data/Raw/Original CPS Downloads/cps_00039.dta", clear

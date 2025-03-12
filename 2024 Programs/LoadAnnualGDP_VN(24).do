@@ -1,10 +1,10 @@
 *1947-1997 GDP data"
 
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 cd "${mypath}/Data/Clean"
 
-import excel "${mypath}/Data/Raw/Business Cycle Anatomy Data/AllTablesHist/GDPbyInd_VA_1947-1997.xlsx", sheet("VA") cellrange(A6:BA114) clear firstrow
+import excel "${mypath}/Data/Raw/Macro Data Files/GDPbyInd_VA_1947-1997.xlsx", sheet("VA") cellrange(A6:BA114) clear firstrow
 
 drop if BA==""
 
@@ -25,7 +25,7 @@ replace Description= "Agriculture, forestry, fishing and hunting" if Description
 
 save AnnualGDP_4797, replace
 
-import delimited "${mypath}/Data/Raw/BEA Download Region sector GDP/SAGDP/SAGDP2N__ALL_AREAS_1997_2023.csv", clear 
+import delimited "${mypath}/Data/Raw/Macro Data Files/SAGDP2N__ALL_AREAS_1997_2023.csv", clear 
 
 rename description Description
 

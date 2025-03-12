@@ -1,18 +1,20 @@
 
 clear all
 cls
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 cd "${mypath}/Data/Clean"
 
 *-----------------------------------------------------------------------
 * Load data (load the full cps file that you want from the clean directory)
 *-----------------------------------------------------------------------
 
-local yearrange 0523
-local filename fullcps`yearrange'
+*local yearrange 0523
+*local filename fullcps`yearrange'
 
 
-	use "`filename'", clear
+	use fullcps0523, clear
+	append using fullcps9304
+	append using fullcps7992
 	
 	qui summarize year
 	local iyear = r(min)
@@ -194,7 +196,10 @@ local filename fullcps`yearrange'
 *-----------------------------------------------------------------------	
 * Save file (resave it as whatever filename you wanted at the beginning)
 *-----------------------------------------------------------------------
-save "`filename'", replace 
+save fullcps, replace 
+
+erase fullcps9304.dta 
+erase fullcps7992.dta
 
 
 

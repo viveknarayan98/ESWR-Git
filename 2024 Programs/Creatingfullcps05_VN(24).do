@@ -1,5 +1,5 @@
 *Set Directory
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 cd "${mypath}/Data/Raw/Original CPS Downloads"
 
@@ -35,7 +35,7 @@ cd "${mypath}/Data/Clean"
 
 *Merge with industry crosswalk
 
-merge m:1 ind1990 using ind1990LCxwalk
+merge m:1 ind1990 using ind1990LCxwalk_annual
 
 keep if _merge==3 
 
