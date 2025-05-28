@@ -214,7 +214,7 @@ sep_by_tenure = squeeze(sum(sum(Tenure.*sep_)))./squeeze(sum(sum(Tenure)));
 % Replacement rate : b_bar /avg(w, ten=1)
 replacement_wage = b_bar/sum(sum(Tenure(:,:,1),2).*wvec);
 average_replacement_wage = b_bar / sum(sum(muE,2).*wvec);
-
+replacement_y =  sum((b_bar*evecx').*(muU))/Y; 
 % Unemploy one year from now given current wage
 sep12_w    = nan(1,Nw);
 w_change12 = zeros(1,2*Nw-1);%-w_step*(Nw-1):w_step:w_step*(Nw-1);
