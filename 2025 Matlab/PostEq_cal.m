@@ -188,10 +188,10 @@ Edist_     = sum(muE,2)+1e-10;
 
 if all(ind==0)
     lwj_distri =-100000*ones(size(distri_data'));
-    lwj_distri  = [lwj_distri' distri_data]
+    lwj_distri  = [lwj_distri' distri_data];
 else
     lwj_distri = [interp1(cumsum(Edist_)/sum(Edist_),log(wvec),0.1:0.1:0.9,'pchip')-mlwage, stdlwage];
-    
+    lwj_distri = [lwj_distri' distri_data];
 end 
 
 

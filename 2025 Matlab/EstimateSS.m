@@ -169,22 +169,22 @@
 clear;
 addpath('/if/research-afe/joaquin/nlopt_test');
 
-load 8_8_25_global.mat %these are 12 params
+load 9_15_25_local.mat  %these are 12 params
 x0 = xopt;
-
-espar = {'fbar'        0.1    0.5
-         'rho_e'       0.85   0.97
-         'sig_e'       0.005  0.2         
-         'sig_f'       0.005  0.2
-         'b_bar'       0      0.2
-         'rho_f'       0.85   0.95
-         'dlta'        0      0.01
-         'rhoJ0'       0.001  0.3
-         'rhoWhU'      0.001  0.3
-         'theta_w'     0.3      1
-         'thta'        0.3      1
-         'chi'         1.8    4.0
-         'lbdw'        0.75   0.95};   % Fraction of wage changes
+%x0(11) = 0.20;
+espar = {'fbar'        0.35    0.5
+         'rho_e'       0.92   0.97
+         'sig_e'       0.10   0.2         
+         'sig_f'       0.05   0.15
+         'b_bar'       0.05   0.15
+         'rho_f'       0.84   0.95
+         'dlta'        0.005  0.015
+         'rhoJ0'       0.05   0.20
+         'rhoWhU'      0.05   0.35
+         'theta_w'     0.3    0.6
+         'thta'        0.15   0.5
+         'chi'         1.25    3.0
+         'lbdw'        0.75   0.90};   % Fraction of wage changes
          % 'lbdw_n'      0      1   % Separation by tenure
          
          
@@ -204,14 +204,15 @@ end
 
 %x0 = [  0.3368    0.9220    0.1149    0.1106    0.0399    0.9154    0.0017    0.1807    0.1967    0.7802    0.6774    2.5183    0.9167]';%
 %xalt =[0.100000 0.891131 0.110167 0.177598 0.098475 0.874286 0.005446 0.008517 0.500000 1.000000 0.618983 3.000000];
-opt.algorithm = NLOPT_G_MLSL_LDS %NLOPT_LN_SBPLX %NLOPT_GN_DIRECT_L %NLOPT_LN_COBYLA %NLOPT_G_MLSL_LDS%
-opt.local_optimizer.algorithm = NLOPT_LN_SBPLX
+opt.algorithm = NLOPT_G_MLSL_LDS
+%NLOPT_LN_SBPLX %NLOPT_GN_DIRECT_L %NLOPT_LN_COBYLA %NLOPT_G_MLSL_LDS%
+opt.local_optimizer.algorithm = NLOPT_LN_SBPLX 
 opt.lower_bounds = lb;
 opt.upper_bounds = ub;
 opt.min_objective = @CalibrateSS
 opt.maxeval = 10000;
 opt.xtol_rel = 1e-5;
-%opt.local_optimizer.ftol_rel = 1e-4;
+opt.local_optimizer.ftol_rel = 1e-4;
 
 %fmin_ = @(x)CalibrateSS(x,espar,data_mom);
 %options_fm = optimset('display','iter');
@@ -234,4 +235,4 @@ fprintf('Minimum value: %f\n', fmin);
 fprintf('Return code: %d\n', retcode);
 
 
-save 8_12_25_global.mat
+save 9_16_25_global.mat

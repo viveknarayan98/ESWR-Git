@@ -27,8 +27,8 @@ end
 F0 = cumsum(p0f);
 
 % Separations between t, and t+h
-bb_          = 100;    % Burn in
-hh           = 300;    % Horizon
+bb_          = 200;    % Burn in
+hh           = 400;    % Horizon
 Nchain       = 20;     % Number of chains
 sep12_sector = zeros(Nw,Nchain,hh*3);
 TFP_sector   = zeros(Nw,Nchain,hh*3);
@@ -42,19 +42,22 @@ e_qa   = zeros(Nw,Nchain,hh);
 
 parfor jj=1:Nchain   
 %for jj=1:Nchain     
-    [sep12_sector(:,jj,:),TFP_sector(:,jj,:), wage_sector(:,jj,:),e_sectora(:,jj,:), sep_q(:,jj,:), wage_q(:,jj,:), tfp_q(:,jj,:), e_qa(:,jj,:)]=chain_macro(jj,F0,hh,muE,zvec,wvec,Pf,Pe,vj,lbdw,RECURSEMAT,sep_,fw,fbar,lbdw_n,fw_rigid,muU,Nw);
+    [sep12_sector(:,jj,:),TFP_sector(:,jj,:), wage_sector(:,jj,:),e_sectora(:,jj,:), sep_q(:,jj,:), wage_q(:,jj,:), tfp_q(:,jj,:), e_qa(:,jj,:)]=chain_macro(jj,F0,hh,muE,zvec,wvec,Pf,Pe,vj,lbdw,RECURSEMAT,sep_,fw,qbar,lbdw_n,fw_rigid,muU,Nw);
 end
 
 
 SEP_  = squeeze(sum(sep_q));
 EE_   = squeeze(sum(e_qa));
 WAGE_ = squeeze(sum(wage_q))./EE_;
+ksdensity(log(WAGE_(:)))
 TFP_  = squeeze(sum(tfp_q))./EE_;
 for jj=1:20
 scatter(SEP_(jj,:),WAGE_(jj,:))
 end 
 YY_ = log(reshape(SEP_(:,bb_+2:end),[],1));
+writematrix(YY_, 'SEP_data.csv', 'WriteMode','overwrite');
 XX_ = [kron(ones(hh-bb_-1,1),eye(Nchain)) log(reshape(WAGE_(:,bb_+1:end-1),[],1)) log(reshape(TFP_(:,bb_+1:end-1),[],1))];
+writematrix(XX_, 'WAGE_TFP_data.csv','WriteMode','overwrite');
 top = (XX_'*XX_);
 bottom = (XX_'*YY_);
 beta_macro_sep = (XX_'*XX_)\(XX_'*YY_);

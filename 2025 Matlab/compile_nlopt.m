@@ -1,0 +1,1 @@
+mex -v CFLAGS='-I/usr/local/include' LDFLAGS='-L/usr/local/lib -lnlopt -lm' nlopt_optimize.c

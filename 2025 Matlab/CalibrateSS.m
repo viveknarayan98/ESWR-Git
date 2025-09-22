@@ -21,8 +21,8 @@ LoadParams;
 w_step    = 0.02;
 m_viter_i = 100;
 m_viter_a = 50;
-Ne        = 7;
-Nf        = 5;
+Ne        = 9;
+Nf        = 9;
 
 %Load params to estimate
 espar = {'fbar' 
@@ -53,6 +53,7 @@ Viter_
 % Compute post equilibriums stats
 PostEq_cal
 
+PlotFigures
 % if check_==0 & DIFF_>10*tol_Viter
 %     res_ = realmax;
 %     return
@@ -74,18 +75,19 @@ Mom_ = [quit_rate
         %pctl_wchange(:)];
 
 W1 = eye(5,5);
-W2 = eye(3,3);
+W2 = 0*eye(3,3);
 W3 = eye(2,2);
 
 %Adjust weighting
-W1(3,3) = 1; %5;
-W3(1,1) = 1; %2;
-W3(2,2) = 1; %2; 
-
+W1(1,1) = 8; %5;
+W1(2,2) = 8; %5;
+W1(3,3) = 8; %5;
+%W3(1,1) = 1; %2;
+%W3(2,2) = 1; %2; 
 
 res_ = (Mom_-data_mom)./data_mom;
-res_=res_(1:5)'*W1*res_(1:5) +res_(8:10)'*W2*res_(8:10)+ res_(11:12)'*W3*res_(11:12);
-
+%res_=res_(1:5)'*W1*res_(1:5) +res_(8:10)'*W2*res_(8:10)+ res_(11:12)'*W3*res_(11:12);
+res_=res_(1:5)'*W1*res_(1:5) + res_(11:12)'*W3*res_(11:12);
 %     res_(6:8)=[];
 %    res_=res_(1:5)'*res_(1:5) + (beta_macro_sep(end-1)/0.5-1)^2 + (beta_macro_sep(end)/-0.9-1)^2;
 % res_ = res_(:)'*res_(:) + sum(diff(lwj_distri,[],2).^2)*100;% + (u-data_mom(3))^2*10000;
@@ -97,7 +99,7 @@ end
 
 fprintf('x: %f\n', x);
 fprintf('value: %f\n', res_);
-
+PrintStats
 end
 
 

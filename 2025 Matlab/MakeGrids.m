@@ -28,7 +28,9 @@ Nz   = Ne*Nf;
 Pz   = kron(Pe,Pf); 
 
 % Wages
-wvec = exp(log(0.5*min(zvec)):w_step:log(1.5*max(zvec)))';
+wvec = exp(log(1.1*min(zvec)):w_step:log(1.1*max(zvec)))';
+%wvec(wvec<0.3247)=[];
+%wvec(wvec>2.3994)=[];
 Nw   = length(wvec);
 
 % Eroding matrix
