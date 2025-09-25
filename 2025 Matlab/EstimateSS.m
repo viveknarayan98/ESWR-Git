@@ -169,26 +169,27 @@
 clear;
 addpath('/if/research-afe/joaquin/nlopt_test');
 
-load 9_15_25_local.mat  %these are 12 params
-x0 = xopt;
-%x0(11) = 0.20;
-espar = {'fbar'        0.35    0.5
-         'rho_e'       0.92   0.97
-         'sig_e'       0.10   0.2         
-         'sig_f'       0.05   0.15
-         'b_bar'       0.05   0.15
-         'rho_f'       0.84   0.95
-         'dlta'        0.005  0.015
-         'rhoJ0'       0.05   0.20
-         'rhoWhU'      0.05   0.35
-         'theta_w'     0.3    0.6
-         'thta'        0.15   0.5
-         'chi'         1.25    3.0
-         'lbdw'        0.75   0.90};   % Fraction of wage changes
-         % 'lbdw_n'      0      1   % Separation by tenure
+load 9_22_25_global.mat  %these are 13 params
+x0(1:14) = xopt;
+x0(15) = 0.75;
+espar = {'fbar'        0.44    0.5
+         'rho_e'       0.93   0.97
+         'sig_e'       0.12   0.2         
+         'sig_f'       0.05   0.12
+         'b_bar'       0.05   0.12
+         'rho_f'       0.84   0.93
+         'dlta'        0.005  0.012
+         'rhoJ0'       0.10   0.18
+         'rhoWhU'      0.15   0.30
+         'theta_w'     0.30   0.5
+         'thta'        0.30   0.5
+         'chi'         1.25   2.5
+         'lbdw'        0.75   0.90   % Fraction of wage changes
+         'lbdw_n'      0.20   0.65
+         'grid_rigid_' 0.40   0.85};
          
          
-         %  'grid_rigid_' 1/7+1e-5      1-1e-5}; % Ne=7 below this number it gets tricky
+%  'grid_rigid_' 1/7+1e-5      1-1e-5}; % Ne=7 below this number it gets tricky
 espar_struct = cell2struct(espar(:,2:3), espar(:,1), 1);
 names = fieldnames(espar_struct);
 n_length = length(names);
@@ -235,4 +236,4 @@ fprintf('Minimum value: %f\n', fmin);
 fprintf('Return code: %d\n', retcode);
 
 
-save 9_16_25_global.mat
+save 9_24_25_global.mat

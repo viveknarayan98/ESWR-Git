@@ -37,7 +37,9 @@ espar = {'fbar'
          'theta_w'
          'thta'
          'chi'
-         'lbdw'};
+         'lbdw'
+         'lbdw_n'
+         'grid_rigid_'};
 npar_ = length(x);
 for jj=1:npar_
     eval([espar{jj,1},'=x(jj);'])
@@ -53,7 +55,7 @@ Viter_
 % Compute post equilibriums stats
 PostEq_cal
 
-PlotFigures
+%PlotFigures
 % if check_==0 & DIFF_>10*tol_Viter
 %     res_ = realmax;
 %     return
