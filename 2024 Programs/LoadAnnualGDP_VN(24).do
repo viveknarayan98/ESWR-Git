@@ -40,7 +40,10 @@ merge 1:1 Description using AnnualGDP_4797
 
 rename linecode LineCode
 
-keep if LineCode==3|LineCode==6|LineCode==10|LineCode==11|LineCode==13|LineCode==25|LineCode==34|LineCode==35|LineCode==36|LineCode==45|LineCode==50|LineCode==59|LineCode==68|LineCode==75|LineCode==82
+*WHY
+*keep if LineCode==3|LineCode==6|LineCode==10|LineCode==11|LineCode==13|LineCode==25|LineCode==34|LineCode==35|LineCode==36|LineCode==45|LineCode==50|LineCode==59|LineCode==68|LineCode==75|LineCode==82
+
+keep if inlist(LineCode, 3, 6, 10, 11, 13, 25, 34, 35, 36, 45, 51, 56, 60, 64, 65, 69, 70, 76, 79, 82)
 
 drop geofips geoname region tablename industryclassification unit _merge Line
 

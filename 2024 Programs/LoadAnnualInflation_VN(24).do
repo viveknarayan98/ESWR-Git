@@ -1,9 +1,11 @@
 *1947-1997 Inflation data"
 
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 cd "${mypath}/Data/Clean"
-import excel "${mypath}/Data/Raw/Business Cycle Anatomy Data/AllTablesHist/GDPbyInd_VA_1947-1997.xlsx", sheet("ChainPriceIndexes") cellrange(A6:BA108) clear firstrow
+
+
+import excel "${mypath}/Data/Raw/Macro Data Files/GDPbyInd_VA_1947-1997.xlsx", sheet("ChainPriceIndexes") cellrange(A6:BA108) clear firstrow
 
 
 drop if BA==""
@@ -42,7 +44,7 @@ xtset LineCode year
 
 save AnnualInflation_4797, replace
 
-import excel "${mypath}/Data/Raw/BEA Download Region sector GDP/PriceIndices(97-23).xlsx", sheet("Table") clear cellrange(A6:AC111) firstrow
+import excel "${mypath}/Data/Raw/Macro Data Files/PriceIndices(97-23).xlsx", sheet("Table") clear cellrange(A6:AC111) firstrow
 
 drop if AC==.
 
@@ -67,7 +69,7 @@ renvarlab `varlist', label prefix(Inflation)
 
 *Get ready to merge so that everything is the 2012=100
 
-gen reweightfactor= Inflation2012/Inflation2017
+gen reweightfactor= 100/Inflation2012
 
 local Inflation Inflation1997 Inflation1998 Inflation1999 Inflation2000 Inflation2001 Inflation2002 Inflation2003 Inflation2004 Inflation2005 Inflation2006 Inflation2007 Inflation2008 Inflation2009 Inflation2010 Inflation2011 Inflation2012 Inflation2013 Inflation2014 Inflation2015 Inflation2016 Inflation2017 Inflation2018 Inflation2019 Inflation2020 Inflation2021 Inflation2022 Inflation2023
 
@@ -85,5 +87,12 @@ append using AnnualInflation_4797
 
 replace Description= "Leisure and hospitality" if Description== "Arts, entertainment, recreation, accommodation, and food services"
 replace Description= "Financial activities" if Description== "Finance, insurance, real estate, rental, and leasing"
+
+xtset LineCode year
+
+rename Inflation Inflation_index
+gen inflation= D.Inflation_index/L.Inflation_index
+
+
 
 save AnnualInflation_final, replace

@@ -1,10 +1,12 @@
 **Set directory
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 cd "${mypath}/Data/Clean"
+
+*There are three specifications that we consider- job changer most restrictive, job changer less restrictive, job changer no restrictions. The first one is defined by people that only respond to empsame saying no. The problem with this is that it only applies from 1994 onwards and only works for mish 6-8 (we do not observe empsame in mish 5). The less restrictive case refers to people that change either industry_g (LineCode) or occ_g at any point of time. This proves to be a good proxy for not in universe responses to 
 
 
 **Keep required variables
-use year month cpsidp LineCode l_status mish empsame lnwage ind1990 statefip unionm unionc educ nWhite age sex earnwt hours gradeate occ_g marst hours using fullcps, clear
+use year month cpsidp LineCode l_status mish empsame lnwage ind1990 unionm unionc educ nWhite age sex earnwt hours gradeate occ_g marst hours statefip using fullcps, clear
 
 keep if inrange(age, 25, 55)
 
@@ -25,6 +27,9 @@ replace EN12 = 1 if EN12==0 & (l_status==3 | L.l_status==3 | L2.l_status==3 | L3
 
 gen ENE12 = 0 if L12.l_status==1 & l_status!=.
 replace ENE12 = 1 if ENE12==0 & (l_status==2 | L.l_status==2 | L2.l_status==2 | L3.l_status==2 | l_status==3 | L.l_status==3 | L2.l_status==3 | L3.l_status==3) 
+
+
+
 
 *Keep only the wage observations in labor force
 keep if mish==4|mish==8
@@ -83,6 +88,31 @@ gen f12notworking=F12.ENE12
 save fullcps_microreg, replace
 
 *Execute micro regression*
+*Age and gradeate?
+
 egen clustergroup = group(statefip LineCode)
 
-logit f12unemployed  age gradeate i.occ_g i.educationlevel i.year i.statefip i.LineCode GDP_G nWhite male lprod wrigid lprice lnwage [iw=earnwt], cluster(LineCode)
+*Baseline specification
+logit f12unemployed lnwage age i.educationlevel i.year i.statefip GDP_G nWhite male lprod wrigid F12.lprice lprice [iw=earnwt], cluster(clustergroup)
+
+*Robustness 1: COVID
+preserve
+keep if year <=2019
+logit f12unemployed lnwage age i.educationlevel i.year i.statefip GDP_G nWhite male lprod wrigid F12.lprice lprice [iw=earnwt], cluster(clustergroup)
+restore
+
+*Robustness 2: Experience + Unionc
+
+gen exp = age - gradeate - 6
+logit f12unemployed lnwage age exp i.educationlevel i.year i.statefip GDP_G nWhite unionc male lprod wrigid F12.lprice lprice [iw=earnwt], cluster(clustergroup)
+
+*Robustness 3: Cluster to statefip
+logit f12unemployed lnwage age exp i.educationlevel i.year i.statefip GDP_G nWhite unionc male lprod wrigid F12.lprice lprice [iw=earnwt], cluster(clustergroup)
+
+*Robustness 4: LineCode FE
+logit f12unemployed age exp i.educationlevel i.year i.statefip i.LineCode GDP_G nWhite unionc male lprod lnwage wrigid F12.lprice lprice [iw=earnwt], cluster(clustergroup)
+
+
+
+
+*logit f12unemployed age i.occ_g i.educationlevel i.year i.LineCode GDP_G nWhite male lprod wrigid F12.lprice lnwage [iw=earnwt], cluster(clustergroup)

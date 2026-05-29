@@ -1,4 +1,4 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 cd "${mypath}/Data/Clean"
 
 *Make a note about how industryfromexcel was created (was copied and pasted from ind_indnaics_crosswalk_2000_onward.xlsx)*

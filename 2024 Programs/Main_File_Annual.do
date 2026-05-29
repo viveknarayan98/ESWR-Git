@@ -1,22 +1,22 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 **MACRO DATA**
 
 	cd "${mypath}/2024 Programs"
-	*Annual sectoral inflation measures
-	do LoadAnnualInflation_VN(24).do
-
-	cd "${mypath}/2024 Programs"
 	*Annual sectoral GDP measures
-	do LoadAnnualGDP_VN(24).do
+	do "LoadAnnualGDP_VN(24).do"
 	
 	cd "${mypath}/2024 Programs"
-	*Create crosswalk between industry categories and ind1990 variable from CPS
-	do ind1990_LCxwalk_annual_VN(24).do
+	*Annual sectoral inflation measures
+	do "BuildInflationIndex.do"
 
 	cd "${mypath}/2024 Programs"
+	*Create crosswalk between industry categories and ind1990 variable from CPS
+	do "ind1990_LCxwalk_annual_VN(24).do"
+
+	*cd "${mypath}/2024 Programs"
 	*Annual sectoral employment and merges with GDP and inflation
-	do BLS_Annual_Employment_VN(24).do 
+	*do BLS_Annual_Employment_VN(24).do 
 
 **MICRO DATA**
 *Constructs microdata downloaded from IPUMS in 3 batches- 1979-1992, 1993-2004, 2005-2023
@@ -67,13 +67,15 @@ global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/
 
 	cd "${mypath}/2024 Programs"
 	*Runs the micro model
-	do Execute_Micro_Regression.do
+	do Execute_Micro_Regression_VN(24).do
 
+*Reprint results with all the different specifications*
 
 	cd "${mypath}/2024 Programs"
 	*Runs the macro model
 	do Execute_Macro_Regression_VN(24).do
 
+	
 **FIGURES**
 
 *Constructing figures with job tenure data

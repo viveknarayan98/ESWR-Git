@@ -1,4 +1,3 @@
-
 clear all
 cls
 global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
@@ -8,13 +7,15 @@ cd "${mypath}/Data/Clean"
 * Load data (load the full cps file that you want from the clean directory)
 *-----------------------------------------------------------------------
 
-*local yearrange 0523
-*local filename fullcps`yearrange'
+*7992, 9304, and 0523
+
+local yearrange 7992
 
 
-	use fullcps0523, clear
-	append using fullcps9304
-	append using fullcps7992
+	use fullcps`yearrange', clear
+
+	
+	
 	
 	qui summarize year
 	local iyear = r(min)
@@ -27,7 +28,7 @@ cd "${mypath}/Data/Clean"
 	replace hours= uhrswork1 if hours==. & numjob<2 & uhrswork1<997 & uhrswork1!=.
 	
 	*CPS tells us ahrsworkt needs to be used with empstat
-	replace hours= ahrsworkt if hours==. & ahrsworkt!=999 & empstat==10
+	*replace hours= ahrsworkt if hours==. & ahrsworkt!=999 & empstat==10
 	replace hours=. if mish!=4 & mish!=8
 	
 	if `iyear'==1979{
@@ -196,10 +197,10 @@ cd "${mypath}/Data/Clean"
 *-----------------------------------------------------------------------	
 * Save file (resave it as whatever filename you wanted at the beginning)
 *-----------------------------------------------------------------------
-save fullcps, replace 
+save fullcps`yearrange', replace 
 
-erase fullcps9304.dta 
-erase fullcps7992.dta
+*erase fullcps9304.dta 
+*erase fullcps7992.dta
 
 
 

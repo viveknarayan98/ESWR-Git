@@ -47,3 +47,7 @@ keep if _merge==3
 drop _merge
 
 save ind1990LCxwalk, replace
+
+collapse (mean) LineCode, by(trimdescrip)
+
+save Line_Code_Descrip, replace

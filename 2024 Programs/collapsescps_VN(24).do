@@ -1,39 +1,42 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 cd "${mypath}/Data/Clean"
 
-use w_MINwindow w_MINwhole gradeate age nWhite  wage hours year month LineCode earnwt using fullcps0523mincer, clear
+use fullcps, clear
+keep if year >=2005
+
+drop LineCode
+
+*Quarterly LineCode
+merge m:1 ind1990 using ind1990LCxwalk
+keep if _merge==3
+drop _merge
 
 
 *Collapses wages
 generate quarter= ceil(month/3)
-gen time= yq(year, quarter)
+replace time= yq(year, quarter)
 format time %tq
 
-collapse(mean) w_MINwindow w_MINwhole  wage (p50) w_MINwindow_p50=w_MINwindow w_MINwhole_p50=w_MINwhole [aw=earnwt*hours], by(time  LineCode)
+save fullcps0523, replace
 
-save collapsedwages_i, replace
+collapse(mean)  wage [aw=earnwt*hours], by(time  LineCode)
+
+save collapsedwages_q, replace
 
 
 * Collapses hours
-use hours year month LineCode  earnwt using fullcps0523, clear
+use hours time LineCode  earnwt using fullcps0523, clear
 
-generate quarter= ceil(month/3)
-gen time= yq(year, quarter)
-format time %tq
-keep hours time LineCode  earnwt
 
 collapse(mean) meanhours=hours [aw=earnwt], by(time  LineCode)
 
-save collapsedhours_i, replace
+save collapsedhours_q, replace
 
 *Collapses demographics_i
 
-use year month cpsidp  LineCode empstat l_status hours wage age gradeate nWhite sex unionm unionc educ wtfinl using fullcps0523mincer, clear
+use time cpsidp  LineCode empstat l_status hours wage age gradeate nWhite sex unionm unionc educ wtfinl using fullcps0523, clear
 
-generate quarter= ceil(month/3)
-gen time= yq(year, quarter)
-format time %tq
 
 
 *HS Dropout*
@@ -60,15 +63,15 @@ gen EmploymentCPS = l_status==1
 
 collapse (sum) EmploymentCPS (mean) age gradeate nWhite male unionm unionc education* if EmploymentCPS==1 [iw=wtfinl], by(time  LineCode)
 
-save collapsed_demographics_i, replace
+save collapsed_demographics_q, replace
 
 
-use fullcps0523mincer, clear
+use fullcps0523, clear
 
 
 * Switch to monthly time
 
-gen time = ym(year, month)
+replace time = ym(year, month)
 
 format time %tm
 
@@ -107,7 +110,6 @@ gen averageweightoneyear= (wtfinl + l12.wtfinl)/2
 
 
 *Quarterly time for collapsing
-generate quarter= ceil(month/3)
 replace time= yq(year, quarter)
 format time %tq
 
@@ -115,50 +117,54 @@ keep EE EU EN UE NE empdenom wchange0 wchangen wchangep  averageweight averagewe
 
 preserve
 collapse(sum) EE EU EN UE NE empdenom [aw=averageweight], by(LineCode time )
-save separations, replace
+save separations_q, replace
 restore
 
 
 collapse (sum) wchange0 wchangen wchangep [aw=averageweightoneyear], by(LineCode time )
-save wagechanges, replace
+save wagechanges_q, replace
 
 
 use employeesgdpmerged, clear
 
 drop if industry_name==""
+drop if LineCode==.
 
 *rename statecode 
 
-merge 1:1  LineCode time using separations
+merge 1:1  LineCode time using separations_q
 keep if _merge==3
 drop _merge
 
-merge 1:1  LineCode time using collapsedwages_i
+merge 1:1  LineCode time using collapsedwages_q
 
 keep if _merge==3
 drop _merge
 
 
-merge 1:1  LineCode time using collapsedhours_i
+merge 1:1  LineCode time using collapsedhours_q
 keep if _merge==3
 
 gen rate = EU/empdenom
 
 drop _merge
 
-merge 1:1  LineCode time using collapsed_demographics_i
+merge 1:1  LineCode time using collapsed_demographics_q
 keep if _merge==3
 drop _merge
 
-merge 1:1  LineCode time using wagechanges
+merge 1:1  LineCode time using wagechanges_q
 keep if _merge==3
 drop _merge
 
 gen thours = Employment*meanhours
 gen price_i  = NominalGDP/RealGDP
+gen wrigid = wchange0/(wchange0 + wchangen)
 drop NominalGDP 
 rename RealGDP GDP
+gen prodh_i = GDP/thours 
+gen lprod= log(prodh_i)
+gen lprice= log(price_i)
 
-
-save mergedcollapsedcps, replace
+save merged_cps_quarterly, replace
 

@@ -3,7 +3,7 @@ clear all
 cls
 
 **Mincer Equation**
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 cd "${mypath}/Data/Clean"
 
 /*
@@ -18,13 +18,14 @@ append using fullcps7992
 keep if lnwage!=. & class_worker == 1 & inrange(age, 25, 55)
 */
 
-use fullcps_micro, replace
+use fullcps, clear
 
-append using 23tomerge
+keep if lnwage!=. & class_worker == 1 & inrange(age, 25, 55)
 
 * Generate variables		
 gen time = ym(year, month)
 format time %tm
+
 
 tsset cpsidp time
 
@@ -118,5 +119,10 @@ merge 1:1 cpsidp year month using "`filename'"
 drop _merge
 sort cpsidp year month
 */
-save fullcps_micro, replace
+save fullcps_m, replace
+
+use fullcps, clear
+
+merge 1:1 year month cpsidp using fullcps_m
+drop _merge
 

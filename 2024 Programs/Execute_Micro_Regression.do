@@ -1,18 +1,20 @@
 **Set directory
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 cd "${mypath}/Data/Clean"
 
 **Build the full file
-use fullcps0523, clear
+use fullcps, clear
+
 
 drop LineCode 
 merge m:1 ind1990 using ind1990LCxwalk_annual
 drop _merge Description CPS_Description trimdescrip
 
+*Most Restrictive
+keep if job_stayer==1
+*append using fullcps9304
 
-append using fullcps9304
-
-keep if inrange(year, 1994, 2019)
+*keep if inrange(year, 1994, 2019)
 *append using fullcps7992
 
 **Keep required variables
@@ -65,11 +67,11 @@ replace educationlevel=5 if educ>111
 
 **Merging with CPS figures
 
-merge m:1 year LineCode using merged_cps_annual
+merge m:1 year LineCode using merged_cps_most_restrictive
 
 keep if _merge==3
 
-drop _merge EE EU EN UE NE empdenom wage Employment EmploymentCPS gradeate male hours thours
+drop _merge EE EU EN UE NE empdenom wage Employment EmploymentCPS gradeate male hours 
 
 
 *Create dummy var for male*
@@ -97,4 +99,4 @@ ssc install egenmore, replace
 *Execute micro regression*
 egen clustergroup = group(statefip LineCode)
 
-logit f12unemployed lnwage age i.educationlevel i.year i.statefip GDP_G nWhite male lprod wrigid F.lprice [iw=earnwt], cluster(clustergroup)
+logit f12unemployed lnwage age i.educationlevel i.year GDP_G nWhite male lprod wrigid F12.lprice [iw=earnwt], cluster(LineCode)

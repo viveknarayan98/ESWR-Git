@@ -13,7 +13,15 @@ cd "${mypath}/Data/Clean"
 
 *Set the filename to whatever year period you are using 
 
-use fullcps, clear
+use fullcps0523, clear
+append using fullcps7992
+append using fullcps9304
+
+save fullcps, replace
+erase fullcps7992.dta
+erase fullcps9304.dta
+
+
 
 *Must do this to avoid MORG data (which is not topcoded)
 

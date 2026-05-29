@@ -1,6 +1,6 @@
 *Set this to your own directory
 
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 import excel "${mypath}/Data/Raw/MasterSeries.xlsx", sheet("BLS Data Series") cellrange(A4:PE938) firstrow clear
 
@@ -59,22 +59,25 @@ keep if inrange(year, 2005, 2023)
 
 *Creates time variable in time format and then collapses available info
 
+*Get national
+
+collapse (sum) employees, by (year month quarter industry_name)
+
 gen time= yq(year, quarter)
 format time %tq
 
-collapse(mean) employees, by(time year quarter industry_name stname statecode)
+collapse(mean) employees, by(time year quarter industry_name)
 
-destring statecode, replace
+
 label var employees "thousands of employees"
 
 replace industry_name= trim(industry_name)
 gen trimdescrip = substr(industry_name, 1, 4)
 
-egen identifier= group(trimdescrip time stname)
 
 cd "${mypath}/Data/Clean"
 
-merge 1:1 trimdescrip time stname using integratedstategdp
+merge 1:1 trimdescrip time using integratedstategdp
 
 drop _merge
 

@@ -1,4 +1,4 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+ global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
 
 *We run two variations of the macro regression. One is for the range of years where we have access to quarterly macroeconomic data (2005-2023) and the other is with annual macroeconomic data (1979-2023). This do file applies to the former. 
 

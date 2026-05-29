@@ -1,9 +1,9 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 
 *Import Nominal GDP data*
 
-import delimited "${mypath}/Data/Raw/BEA Download Region sector GDP/SQGDP/SQGDP2_US_2005_2023.csv", clear 
+import delimited "${mypath}/Data/Raw/Macro Data Files/SQGDP2_US_2005_2023.csv", clear 
 
 *renames variables to their labels so that we can identify them
 ssc install renvarlab
@@ -60,7 +60,7 @@ saveold nominalgdpdata, replace
 
 ****Repeat for Real GDP****
 
-import delimited "${mypath}/Data/Raw/BEA Download Region sector GDP/SQGDP/SQGDP9_US_2005_2023.csv", clear 
+import delimited "${mypath}/Data/Raw/Macro Data Files/SQGDP9_US_2005_2023.csv", clear 
 
 *renames variables to their labels so that we can identify them
 ssc install renvarlab
@@ -115,11 +115,11 @@ save realgdpdata, replace
 
 *Merges Real GDP with Nominal GDP
 
-merge 1:1 GeoName LineCode yq using nominalgdpdata
+merge 1:1 LineCode yq using nominalgdpdata
 
 
-keep year quarter statefips LineCode NominalGDP RealGDP Description GeoName
-order year quarter statefips LineCode NominalGDP RealGDP Description GeoName
+keep year quarter statefips LineCode NominalGDP RealGDP Description 
+order year quarter statefips LineCode NominalGDP RealGDP Description 
 
 
 * We drop these lines becuase these lines are: total, total private, manufacturing (sum of durable and nondurable), and government (all "sectors")
@@ -134,9 +134,7 @@ replace Description= trim(Description)
 
 gen trimdescrip= substr(Description, 1 , 4)
 
-egen identifier= group(trimdescrip time GeoName)
-
-rename GeoName stname 
+egen identifier= group(trimdescrip time) 
 
 save integratedstategdp, replace
 

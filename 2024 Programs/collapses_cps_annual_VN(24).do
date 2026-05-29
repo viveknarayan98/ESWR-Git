@@ -1,24 +1,17 @@
-clear all
-cls
+*clear all
+*cls
 
 **Mincer Equation**
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 cd "${mypath}/Data/Clean"
 
-use fullcps0523
-
-	drop LineCode
-	merge m:1 ind1990 using ind1990LCxwalk_annual
-	drop _merge
-
-append using fullcps9304
-append using fullcps7992
-
-save fullcps, replace
+*Only one of these can equal 1
+local most_restrictive = 0
+local less_restrictive = 0
+local no_restrictions = 0
+local baseline = 1
 
 ************Collapse wages****************
-
-*use year using "`cpsfile'"
 
 use wage hours year ind1990 LineCode earnwt l_status using fullcps, clear
 
@@ -33,9 +26,11 @@ save collapsedwages_i, replace
 
 use hours year ind1990 LineCode earnwt l_status using fullcps, clear
 
+keep hours year ind1990 LineCode earnwt l_status
+
 keep if l_status!=3
 
-collapse (mean) hours [aw=earnwt], by(year LineCode)
+collapse (mean) hours_i = hours [aw=earnwt], by(year LineCode)
 
 save collapsed_hours_i, replace
 
@@ -43,6 +38,9 @@ save collapsed_hours_i, replace
 ***********Collapse demographics_i*************
 
 use year month cpsidp LineCode empstat l_status hours lnwage age gradeate nWhite sex unionm unionc educ wtfinl ind1990 mish using fullcps, clear
+
+*keep year month cpsidp LineCode empstat l_status hours lnwage age gradeate nWhite sex unionm unionc educ wtfinl ind1990 mish
+*job_stayer job_changer job_changer_unknown
 
 keep if l_status!=3
 
@@ -92,15 +90,51 @@ tsset cpsidp time
 
 *Wage change calculation
 
-gen awchange = s12.lnwage
-gen wchange0 = 0 if awchange!=.
+*For most restrictive, set job_stayer==1
+*For less restrictive, set job_changer_unknown!=1
+
+/*
+if `most_restrictive'==1{
+	gen awchange = s12.lnwage
+gen wchange0 = 0 if awchange!=. & job_changer_unknown==0
 replace wchange0 = 1 if wchange0 == 0 & abs(awchange)<=0.005
 
-gen wchangep = 0 if awchange!=.
+gen wchangep = 0 if awchange!=. & job_changer_unknown==0
+replace wchangep = 1 if wchangep==0 & awchange>0.005
+
+gen wchangen = 0 if awchange!=. & job_changer_unknown==0
+replace wchangen = 1 if wchangen==0 & awchange<-0.005
+}
+
+
+
+if `less_restrictive'==1{
+
+gen awchange = s12.lnwage
+gen wchange0 = 0 if awchange!=. & job_changer==0
+replace wchange0 = 1 if wchange0 == 0 & abs(awchange)<=0.005
+
+gen wchangep = 0 if awchange!=. & job_changer==0
+replace wchangep = 1 if wchangep==0 & awchange>0.005
+
+gen wchangen = 0 if awchange!=. & job_changer==0
+replace wchangen = 1 if wchangen==0 & awchange<-0.005
+	
+}
+*/
+
+*if `baseline'==1{
+
+gen awchange = s12.lnwage
+gen wchange0 = 0 if awchange!=. 
+replace wchange0 = 1 if wchange0 == 0 & abs(awchange)<=0.005
+
+gen wchangep = 0 if awchange!=. 
 replace wchangep = 1 if wchangep==0 & awchange>0.005
 
 gen wchangen = 0 if awchange!=.
 replace wchangen = 1 if wchangen==0 & awchange<-0.005
+*}
 
 *Separations calculation
 gen EU        = 0 if l_status!=. & L.l_status==1
@@ -108,8 +142,8 @@ gen EN 	      = EU
 replace EU    = 1 if EU==0 & l_status==2
 replace EN    = 1 if EN==0 & l_status==3
 
-*Account for people that have not been observed for a year
-*replace EU=1 if mish==5 & L12.l_status==1 & l_status==2
+*Account for people that have not been observed for 9 months between mish 4 and mish 5
+replace EU=1 if mish==5 & L9.l_status==1 & l_status==2
 
 *Employed to employed flows
 gen EE=1 if   l_status==1 & l.l_status==1
@@ -132,6 +166,8 @@ keep EE EU EN UE NE empdenom wchange0 wchangen wchangep averageweight averagewei
 
 preserve
 collapse (sum) wchange0 wchangen wchangep [aw=averageweightoneyear], by(year LineCode)
+
+gen wrigid = wchange0/(wchange0+wchangen)
 save "wagechanges_i", replace
 
 *Separations collapsed
@@ -143,15 +179,51 @@ save separations_i, replace
 
 *Merging files for macro regression
 
-local files_to_merge separations_i collapsedwages_i emp_gdp_inf_annual collapsed_demographics_i wagechanges_i collapsed_hours_i
+local files_to_merge separations_i collapsedwages_i collapsed_demographics_i wagechanges_i collapsed_hours_i
 
 foreach file in `files_to_merge'{
 	merge 1:1 year LineCode using `file'
 	drop _merge
 }
 
-drop if GDP==.
+merge m:1 LineCode using Line_Code_Descrip
+drop _merge
+merge 1:1 year trim_Descrip using annual_inflation_gdp
+drop _merge
 
-save merged_cps, replace
+
+*drop if GDP==.
+
+gen thours = EmploymentCPS*hours_i
+gen prodh_i = GDP/thours
+gen lprod= log(prodh_i)
 
 
+*Check what is going on here
+rename Inflation_index price_i
+gen lprice= log(price_i)
+
+
+rename year time
+xtset LineCode time
+
+
+
+*if `most_restrictive'==1{
+*save merged_cps_most_restrictive, replace
+
+*}
+
+*if `less_restrictive'==1{
+*save merged_cps_less_restrictive, replace
+
+*}
+
+
+*if `no_restrictions'==1{
+*save merged_cps_no_restrictions, replace
+*}
+
+*if `baseline'==1{
+	save merged_cps_annual, replace
+*}
