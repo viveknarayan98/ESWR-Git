@@ -58,6 +58,7 @@ replace educationlevel=5 if educ>111
 
 **Merging with CPS figures
 
+
 merge m:1 year LineCode using merged_cps_annual
 
 keep if _merge==3

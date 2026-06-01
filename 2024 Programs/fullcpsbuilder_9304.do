@@ -18,7 +18,7 @@ keep if _merge==3
 
 drop _merge
 
-merge m:1 ind1990 using ind1990LCxwalk_annual
+merge m:1 ind1990 using ind1990LCxwalk
 
 drop _merge 
 

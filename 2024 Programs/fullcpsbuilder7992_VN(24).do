@@ -20,7 +20,7 @@ merge 1:1 year month cpsidp using "${mypath}/Data/Raw/Original CPS Downloads/cps
 keep if year <=1992
 drop _merge faminc asecflag cpsidv pernum hwtfinl serial
 
-merge m:1 ind1990 using ind1990LCxwalk_annual
+merge m:1 ind1990 using ind1990LCxwalk
 
 drop _merge 
 

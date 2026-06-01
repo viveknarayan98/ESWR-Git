@@ -204,8 +204,7 @@ rename Inflation_index price_i
 gen lprice= log(price_i)
 
 
-rename year time
-xtset LineCode time
+
 
 
 

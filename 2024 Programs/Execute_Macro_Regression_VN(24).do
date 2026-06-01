@@ -3,12 +3,13 @@
 global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
 cd "${mypath}/Programs/ESWR-Git/Data/Clean"
 
-local quarterly=0
+local quarterly=1
 
 *Appending all the collapsed and merged CPS files
 
 if `quarterly'==0{
 	use merged_cps_annual, clear
+	rename year time
 }
 else{
 	use merged_cps_quarterly, clear
@@ -44,15 +45,17 @@ gen dlprod_rig2  = d.lprod*L.wrigid
 
 gen GDP_G = log(GDP) - log(L.GDP)
 
+/*
 if `quarterly'==0{
 	save merged_cps_annual, replace
 }
 else{
 	save merged_cps_quarterly, replace
 }
+*/
 
 
-*Mean GDP is weight
+*Mean EMP is weight
 egen double mean_EMP = mean(EmploymentCPS), by(LineCode)
 
 *Run regression***

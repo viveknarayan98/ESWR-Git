@@ -35,7 +35,7 @@ cd "${mypath}/Data/Clean"
 
 *Merge with industry crosswalk
 
-merge m:1 ind1990 using ind1990LCxwalk_annual
+merge m:1 ind1990 using ind1990LCxwalk
 
 keep if _merge==3 
 

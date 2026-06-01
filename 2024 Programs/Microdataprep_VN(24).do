@@ -7,7 +7,7 @@ cd "${mypath}/Data/Clean"
 * Load data (load the full cps file that you want from the clean directory)
 *-----------------------------------------------------------------------
 
-*7992, 9304, and 0523
+*Do 7992, 9304, and 0523 in that order (Note that this is for file size management purposes)
 
 local yearrange 7992
 
