@@ -53,5 +53,7 @@ From this 18, the resulting 20 in the Stata code are composed as follows:
 19. Accommodation and food services: 1990 Census categories 762-770 + Eating and drinking places (641)
 20. Other services : 740-760 + Private households (761) + 771-791 (personal services) 
 
+Note: 732 is in to categories so the facto in the last one (13), 873 - Labor Unions is thrown away, 892 is also duplicated between 13. and 14.
 
+After that, merged with Line_Code_description and n numerical values, and saved throwing away categories without industry (government).
 
