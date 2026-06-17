@@ -2,6 +2,7 @@ global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/
 
 cd "${mypath}/Data/Clean"
 
+*Downloaded from https://data.bls.gov/PDQWeb/jt*
 
 import excel "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git/Data/Raw/Macro Data Files/JOLTS_data.xlsx", sheet("BLS Data Series") cellrange(A4:LM84) firstrow allstring clear
 
@@ -40,7 +41,7 @@ drop SeriesID industrycode _merge
 
 reshape wide val, i(date industrydescription) j(data_series) string
 
-label var valHIR Hires
+label var valHIR "Hires"
 label var valJOR "Job Openings"
 label var valLDR "Layoff and discharges"
 label var valOSR "Other Separations"
@@ -57,4 +58,28 @@ rename qdate time
 
 cd "${mypath}/Programs/ESWR-Git/Data/Clean"
 
+
+
+*Connecting the descriptions to Line Codes
+
+*Called private educational services in JOLTS and educational services in BEA
+
+
+replace trimdescrip = "Educ" if trimdescrip=="Priv"
+merge m:1 trimdescrip using Line_Code_Descrip
+
+keep if _merge==3
+drop _merge
+
+*Connecting the JOLTS data to our quarterly macro data
+merge 1:1 time LineCode using merged_cps_quarterly
+
+keep if _merge==3
+
+drop _merge
+
 save JOLTS_macro_reg_series, replace
+*Now execute lines 20-64 from Execute_Macro_Regression to get the results (note that you will have to change the LHS variable to something from JOLTS when executing the regression)
+
+
+
