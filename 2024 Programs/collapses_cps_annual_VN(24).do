@@ -188,6 +188,7 @@ foreach file in `files_to_merge'{
 
 merge m:1 LineCode using Line_Code_Descrip
 drop _merge
+rename trimdescrip trim_Descrip
 merge 1:1 year trim_Descrip using annual_inflation_gdp
 drop _merge
 

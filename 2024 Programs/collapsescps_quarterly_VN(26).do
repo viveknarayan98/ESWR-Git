@@ -5,7 +5,7 @@ cd "${mypath}/Data/Clean"
 use fullcps, clear
 keep if year >=2005
 
-drop LineCode
+*drop LineCode
 
 
 *Collapses wages
