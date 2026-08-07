@@ -49,11 +49,19 @@ preserve
 restore
 drop desc_key
 
+
+
 * Reshape and save 1979-1996 series
 reshape long Inflation, i(LineCode) j(year)
 keep if inrange(year, 1979, 1996)
 destring Inflation, replace
 xtset LineCode year
+
+*Check LineCode
+*replace LineCode=82 if LineCode==83
+*replace LineCode=85 if LineCode==86
+*replace LineCode=88 if LineCode==89
+
 save AnnualInflation_4797, replace
 
 
@@ -76,6 +84,8 @@ replace Description = "Nondurable goods manufacturing"                          
 replace Description = "Mining, quarrying, and oil and gas extraction"                        if Description == "Mining"
 replace Description = "Other services (except government and government enterprises)"        if Description == "Other services, except government"
 replace Description = "Agriculture, forestry, fishing and hunting"                           if Description == "Agriculture, forestry, fishing, and hunting"
+
+
 
 local varlist C D E F G H I J K L M N O P Q R S T U V W X Y Z AA AB AC
 renvarlab `varlist', label prefix(Inflation)
@@ -111,23 +121,31 @@ drop reweightfactor anchor1997
 *--------------------------------------------------------------
 * STEP 3: Reshape, append, and build inflation rate
 *--------------------------------------------------------------
+
 reshape long Inflation, i(LineCode) j(year)
 
 append using AnnualInflation_4797
 
-replace Description = "Leisure and hospitality"   if Description == "Arts, entertainment, recreation, accommodation, and food services"
-replace Description = "Financial activities"       if Description == "Finance, insurance, real estate, rental, and leasing"
+*replace Description = "Leisure and hospitality"   if Description == "Arts, entertainment, recreation, accommodation, and food services"
+*replace Description = "Financial activities"       if Description == "Finance, insurance, real estate, rental, and leasing"
 
-xtset LineCode year
+encode Description, gen(code)
+xtset code year
 rename Inflation Inflation_index
 
 * Year-over-year inflation rate
 gen inflation = D.Inflation_index / L.Inflation_index
 
+*Renaming to match GDP file
+replace Description="Administrative and support and waste management and remediation services" if Description=="Administrative and waste management services"
+
+*Note that we do not care about the Line Codes in the inflation series
 save AnnualInflation_final, replace
 
-merge 1:1 year Description using AnnualGDP_final
+use AnnualGDP_final, clear
+
+merge 1:1 year Description using AnnualInflation_final
 
 keep if _merge==3
-
+drop _merge
 save annual_inflation_gdp, replace
