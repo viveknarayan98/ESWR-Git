@@ -1,0 +1,27 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Determinants of unemployment 12 months ahead\label{tab:wagerigid}}
+\begin{tabular}{l*{5}{c}}
+\toprule
+                    &\multicolumn{1}{c}{Baseline}&\multicolumn{1}{c}{Pre-COVID}&\multicolumn{1}{c}{Exper+union}&\multicolumn{1}{c}{Clus statefip}&\multicolumn{1}{c}{LineCode FE}\\
+\midrule
+f12unemployed       &                     &                     &                     &                     &                     \\
+Log nominal wage    &     -0.4379\sym{***}&     -0.4351\sym{***}&     -0.4254\sym{***}&     -0.4254\sym{***}&     -0.4514\sym{***}\\
+                    &    (0.0242)         &    (0.0249)         &    (0.0239)         &    (0.0144)         &    (0.0178)         \\
+Log productivity    &      0.0044         &      0.0226         &      0.0040         &      0.0040         &      0.3751\sym{***}\\
+                    &    (0.0155)         &    (0.0162)         &    (0.0154)         &    (0.0154)         &    (0.0551)         \\
+Wage rigidity       &      5.8837\sym{***}&      6.4457\sym{***}&      5.8091\sym{***}&      5.8091\sym{***}&      2.3633\sym{***}\\
+                    &    (0.5694)         &    (0.5591)         &    (0.5658)         &    (0.3306)         &    (0.3389)         \\
+Log price (t+12)    &     -0.1826\sym{***}&     -0.2295\sym{***}&     -0.1801\sym{***}&     -0.1801\sym{***}&     -0.2186\sym{***}\\
+                    &    (0.0651)         &    (0.0663)         &    (0.0650)         &    (0.0316)         &    (0.0604)         \\
+Log price           &      0.0897         &      0.0900         &      0.0918         &      0.0918\sym{***}&      0.2360\sym{***}\\
+                    &    (0.0750)         &    (0.0788)         &    (0.0745)         &    (0.0273)         &    (0.0624)         \\
+\midrule
+Observations        &   1,415,674         &   1,309,450         &   1,415,674         &   1,415,674         &   1,415,674         \\
+Pseudo $R^2$        &       0.039         &       0.038         &       0.040         &       0.040         &       0.050         \\
+\bottomrule
+\multicolumn{6}{l}{\footnotesize Logit coefficients. Standard errors in parentheses.}\\
+\multicolumn{6}{l}{\footnotesize * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}\\
+\multicolumn{6}{l}{\footnotesize Baseline (column 1) estimated on 1415674 observations.}\\
+\end{tabular}
+\end{table}

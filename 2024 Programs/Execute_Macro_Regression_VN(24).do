@@ -28,6 +28,7 @@ xtset LineCode time
 *gen wrigid = wchange0/(wchange0 + wchangen)
 
 gen lrwage = log(wage/price_i)
+gen lnwage = ln(wage)
 gen lsep   = log(EU)
 gen lhiresu = log(UE)
 gen lhires = log(UE+NE)
@@ -60,9 +61,64 @@ egen double mean_EMP = mean(EmploymentCPS), by(LineCode)
 
 *Run regression***
 
-*With log separations
-xtreg F.lsep   i.time age education* nWhite male unionm unionc GDP_G lrwage lprod wrigid, fe robust cluster(LineCode)
+gen lsepr = log(EU/(EU+EN+EE))
+gen lseprt = log((EU+EN)/(EU+EN+EE))
+
+egen trend=group(time)
+
+if `quarterly'==1{
+egen trend2= group(year)
+}
+
+****SEP REGRESSIONS*
+*Regression with trend and weights (BASELINE)
+reg F.lsepr c.trend##i.LineCode  age education* nWhite male unionm unionc GDP_G lrwage lprod wrigid [iw=EmploymentCPS], robust 
+
+*With nominal wage and inflation
+
+
+reg F.lsepr c.trend##i.LineCode  age education* nWhite male unionm unionc GDP_G lnwage lprod wrigid lprice F.lprice [iw=EmploymentCPS], robust 
+
+
+
+*Regression with year trend
+if `quarterly'==1{
+reg F.lsepr c.trend2##i.LineCode  age education* nWhite male unionm unionc GDP_G lrwage lprod wrigid [iw=EmploymentCPS], robust 
+}
+
+*Change in LHS var (not significant for wages but signs remain the same)
+reg F.lsep c.trend##i.LineCode  age education* nWhite male unionm unionc GDP_G lrwage lprod wrigid [iw=EmploymentCPS], robust 
+
+*With d.lprod, d.lprice
+reg F.lsepr c.trend##i.LineCode  age education* nWhite male unionm unionc GDP_G lrwage lprod wrigid d.lprod d.lprice [iw=EmploymentCPS], robust 
+
+*No weights
+xtreg F.lsepr c.trend##i.LineCode  i.time age education* nWhite male unionm unionc GDP_G lrwage lprod wrigid, fe robust cluster(LineCode)
+
+
+**PROD REGRESSIONS**
+*Baseline
+xtreg F.lprod c.trend##i.LineCode i.time age education* nWhite male unionm unionc GDP_G lrwage lsep  wrigid, fe robust cluster(LineCode)
+
+*Year trend
+if `quarterly'==1{
+xtreg F.lprod c.trend2##i.LineCode age education* nWhite male unionm unionc GDP_G lrwage lsep  wrigid, fe robust cluster(LineCode)
+}
+
+*No trend
 xtreg F.lprod  i.time age education* nWhite male unionm unionc GDP_G lrwage lsep  wrigid, fe robust cluster(LineCode)
+
+*With weights
+reg F.lprod c.trend##i.LineCode i.time age education* nWhite male unionm unionc GDP_G lrwage lsep  wrigid [iw=EmploymentCPS], robust
+
+
+
+
+
+
+
+/*
+
 
 * 0) Panel/time setup (adjust names if yours differ)
 xtset LineCode time
@@ -170,6 +226,7 @@ twoway ///
  title("Rolling 5-year: lrwage coeff vs unemployment") ///
  legend(order(1 "Window points" 2 "Linear fit")) ///
  xlabel(, grid) ylabel(, grid)
+*/
 
 *if `quarterly'==0{
 	*rename time year
@@ -196,6 +253,90 @@ label var time "Year"
 
 tsline wrigid
 */
+
+capture ssc install estout, replace
+eststo clear
+ 
+*---------------- SEP REGRESSIONS ----------------------------*
+* Baseline: trend + weights
+eststo sep1: reg F.lsepr c.trend##i.LineCode age education* nWhite male ///
+    unionm unionc GDP_G lrwage lprod wrigid [iw=EmploymentCPS], robust
+scalar Nbase_sep = e(N)
+ 
+* Nominal wage + inflation
+capture drop lnwage
+gen lnwage = ln(wage)
+eststo sep2: reg F.lsepr c.trend##i.LineCode age education* nWhite male ///
+    unionm unionc GDP_G lnwage lprod wrigid lprice F.lprice [iw=EmploymentCPS], robust
+ 
+* Year trend (quarterly only)
+local sepq ""
+if `quarterly'==1 {
+    eststo sep3: reg F.lsepr c.trend2##i.LineCode age education* nWhite male ///
+        unionm unionc GDP_G lrwage lprod wrigid [iw=EmploymentCPS], robust
+    local sepq "sep3"
+    local sepqt `""Year trend""'
+}
+ 
+* LHS in levels (lsep)
+eststo sep4: reg F.lsep c.trend##i.LineCode age education* nWhite male ///
+    unionm unionc GDP_G lrwage lprod wrigid [iw=EmploymentCPS], robust
+ 
+* With D.lprod, D.lprice
+eststo sep5: reg F.lsepr c.trend##i.LineCode age education* nWhite male ///
+    unionm unionc GDP_G lrwage lprod wrigid d.lprod d.lprice [iw=EmploymentCPS], robust
+ 
+* No weights, FE
+eststo sep6: xtreg F.lsepr c.trend##i.LineCode i.time age education* nWhite male ///
+    unionm unionc GDP_G lrwage lprod wrigid, fe robust cluster(LineCode)
+ 
+esttab sep1 sep2 `sepq' sep4 sep5 sep6 using "sep_table.tex", replace ///
+    keep(lrwage lnwage lprod wrigid) order(lrwage lnwage lprod wrigid) ///
+    varlabels(lrwage "Log real wage" lnwage "Log nominal wage" ///
+              lprod "Log productivity" wrigid "Wage rigidity") ///
+    b(3) se(3) star(* 0.10 ** 0.05 *** 0.01) ///
+    stats(N r2, fmt(%9.0fc 3) labels("Observations" "\$R^2\$")) ///
+    mtitles("Baseline" "Nominal wage" `sepqt' "LHS in levels" "With \$\Delta\$ controls" "No weights") ///
+    title("Determinants of separations\label{tab:sep}") ///
+    booktabs nonumbers nonotes label ///
+    addnotes("Standard errors in parentheses. * \$p<0.10\$, ** \$p<0.05\$, *** \$p<0.01\$." ///
+             "Baseline (column 1) estimated on `=scalar(Nbase_sep)' observations.")
+ 
+*---------------- PROD REGRESSIONS ---------------------------*
+* Baseline
+eststo prod1: xtreg F.lprod c.trend##i.LineCode i.time age education* nWhite male ///
+    unionm unionc GDP_G lrwage lsep wrigid, fe robust cluster(LineCode)
+scalar Nbase_prod = e(N)
+ 
+* Year trend (quarterly only)
+local prodq ""
+if `quarterly'==1 {
+    eststo prod2: xtreg F.lprod c.trend2##i.LineCode age education* nWhite male ///
+        unionm unionc GDP_G lrwage lsep wrigid, fe robust cluster(LineCode)
+    local prodq "prod2"
+    local prodqt `""Year trend""'
+}
+ 
+* No trend
+eststo prod3: xtreg F.lprod i.time age education* nWhite male ///
+    unionm unionc GDP_G lrwage lsep wrigid, fe robust cluster(LineCode)
+ 
+* Weights
+eststo prod4: reg F.lprod c.trend##i.LineCode i.time age education* nWhite male ///
+    unionm unionc GDP_G lrwage lsep wrigid [iw=EmploymentCPS], robust
+ 
+esttab prod1 `prodq' prod3 prod4 using "prod_table.tex", replace ///
+    keep(lrwage lsep wrigid) order(lrwage lsep wrigid) ///
+    varlabels(lrwage "Log real wage" lsep "Log separations" wrigid "Wage rigidity") ///
+    b(3) se(3) star(* 0.10 ** 0.05 *** 0.01) ///
+    stats(N r2, fmt(%9.0fc 3) labels("Observations" "\$R^2\$")) ///
+    mtitles("Baseline" `prodqt' "No trend" "Weighted") ///
+    title("Determinants of productivity\label{tab:prod}") ///
+    booktabs nonumbers nonotes label ///
+    addnotes("Standard errors in parentheses. * \$p<0.10\$, ** \$p<0.05\$, *** \$p<0.01\$." ///
+             "Baseline (column 1) estimated on `=scalar(Nbase_prod)' observations.")
+ 
+eststo clear
 
 
 

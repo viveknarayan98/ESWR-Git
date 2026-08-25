@@ -122,7 +122,7 @@ save wagechanges_q, replace
 
 use employeesgdpmerged, clear
 
-drop if industry_name==""
+*drop if industry_name==""
 drop if LineCode==.
 
 *rename statecode 
