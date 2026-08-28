@@ -43,5 +43,5 @@ drop _merge
 save ind1990LCxwalk, replace
 
 * Update the LineCode-description crosswalk with any new mappings
-collapse (mean) LineCode, by(trimdescrip)
-save Line_Code_Descrip, replace
+*collapse (mean) LineCode, by(trimdescrip)
+*save Line_Code_Descrip, replace

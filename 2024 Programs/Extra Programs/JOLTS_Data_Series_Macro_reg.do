@@ -72,7 +72,7 @@ keep if _merge==3
 drop _merge
 
 *Connecting the JOLTS data to our quarterly macro data
-merge 1:1 time LineCode using merged_cps_quarterly
+merge 1:1 time trimdescrip using merged_cps_quarterly_jolts
 
 keep if _merge==3
 

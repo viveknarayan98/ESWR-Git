@@ -95,3 +95,21 @@ global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/
 	*Runs the macro model (need to set quarterly to either 1 or 0 depending on which regression you want to run)
 	do "Execute_Macro_Regression_VN(24).do"
 	
+	
+***JOLTS***
+    
+	cd "${mypath}/2024 Programs"
+	do "gdp_jolts.do"
+	
+	cd "${mypath}/2024 Programs"
+	do "collapses_cps_quarterly_jolts.do"
+	
+	cd "${mypath}/2024 Programs"
+	do "jt_industry_creation.do"
+	
+	cd "${mypath}/2024 Programs"
+	do "JOLTS_Data_Series_Macro_reg.do"
+	
+	
+	
+	

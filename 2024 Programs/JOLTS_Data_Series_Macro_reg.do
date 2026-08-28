@@ -1,10 +1,10 @@
-global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen"
+global mypath "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git"
 
 cd "${mypath}/Data/Clean"
 
 *Downloaded from https://data.bls.gov/PDQWeb/jt*
 
-import excel "/Users/viveknarayan/Library/Mobile Documents/com~apple~CloudDocs/vivek_camilo_project Rob Chen/Programs/ESWR-Git/Data/Raw/Macro Data Files/JOLTS_data.xlsx", sheet("BLS Data Series") cellrange(A4:LM84) firstrow allstring clear
+import excel "${mypath}/Data/Raw/Macro Data Files/JOLTS_data.xlsx", sheet("BLS Data Series") cellrange(A4:LM84) firstrow allstring clear
 
 gen industrycode= substr(SeriesID, 4, 6)
 
@@ -56,7 +56,7 @@ collapse (mean) valHIR valJOR valLDR valOSR valQUR, by(industrydescription trimd
 
 rename qdate time
 
-cd "${mypath}/Programs/ESWR-Git/Data/Clean"
+*cd "${mypath}/Programs/ESWR-Git/Data/Clean"
 
 
 
@@ -82,4 +82,54 @@ save JOLTS_macro_reg_series, replace
 *Now execute lines 20-64 from Execute_Macro_Regression to get the results (note that you will have to change the LHS variable to something from JOLTS when executing the regression)
 
 
+*Set panel and time vars
+xtset LineCode time
+ 
+*Create productivity and inflation measures
 
+
+*gen prodh_i = GDP/thours
+*gen lprod= log(prodh_i)
+*gen lprice= log(price_i)
+*gen wrigid = wchange0/(wchange0 + wchangen)
+
+gen lrwage = log(wage/price_i)
+gen lnwage = ln(wage)
+gen lsep   = log(EU)
+gen lhiresu = log(UE)
+gen lhires = log(UE+NE)
+gen lsep_a = log(EU+EN)
+gen lprod4 = log(GDP/(thours))
+gen lrwage_rig = lrwage*wrigid
+gen lprod_rig = lprod*wrigid
+gen dlrwage = d.lrwage
+gen dlprod  = d.lprod
+gen dlsep   = d.lsep
+gen dlrwage_rig = d.lrwage_rig
+gen dlprod_rig  = d.lprod_rig
+gen dlrwage_rig2 = d.lrwage*L.wrigid
+gen dlprod_rig2  = d.lprod*L.wrigid
+
+gen GDP_G = log(GDP) - log(L.GDP)
+
+/*
+if `quarterly'==0{
+	save merged_cps_annual, replace
+}
+else{
+	save merged_cps_quarterly, replace
+}
+*/
+
+
+*Mean EMP is weight
+egen double mean_EMP = mean(EmploymentCPS), by(LineCode)
+
+*Run regression***
+
+gen lsepr = log(EU/(EU+EN+EE))
+gen lseprt = log((EU+EN)/(EU+EN+EE))
+
+egen trend=group(time)
+
+reg F.valLDR c.trend##i.LineCode i.time  age education* nWhite male unionm unionc GDP_G lrwage lprod wrigid [iw=EmploymentCPS], robust 
